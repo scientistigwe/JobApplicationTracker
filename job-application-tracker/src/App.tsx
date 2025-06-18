@@ -389,12 +389,29 @@ const JobApplicationTracker = () => {
             Please sign in with Google to connect to your Google Sheet. Your
             login is secure and never stored.
           </Typography>
-          <GoogleAuthButton
-            onSuccess={(token) => {
-              setGoogleToken(token);
-              setIsLoggedIn(true);
-            }}
-          />
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {error}
+            </Alert>
+          )}
+          <Box sx={{ mb: 3 }}>
+            <GoogleAuthButton
+              onSuccess={(token) => {
+                if (!token) {
+                  setError("Authentication failed. Please try again.");
+                  return;
+                }
+                setGoogleToken(token);
+                setIsLoggedIn(true);
+                setError("");
+              }}
+            />
+          </Box>
+          <Typography variant="caption" color="text.secondary">
+            If you're experiencing login issues, make sure you've configured the
+            Google OAuth client ID properly. Check the README.md for setup
+            instructions.
+          </Typography>
         </Paper>
       </Container>
     );

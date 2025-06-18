@@ -1,54 +1,82 @@
-# React + TypeScript + Vite
+# Job Application Tracker
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React + Vite application to track job applications. Uses Material-UI for the interface and Google Sheets for cross-device data storage.
 
-Currently, two official plugins are available:
+## Setup
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+1. Install dependencies:
 
-## Expanding the ESLint configuration
+   ```
+   npm install
+   ```
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+2. Create a `.env.local` file in the root directory with your Google OAuth Client ID:
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+   ```
+   VITE_GOOGLE_CLIENT_ID=your-client-id-here.apps.googleusercontent.com
+   ```
+
+   To get a Google OAuth Client ID:
+
+   - Go to the [Google Cloud Console](https://console.cloud.google.com/)
+   - Create a new project or select an existing one
+   - Navigate to "APIs & Services" > "Credentials"
+   - Click "Create Credentials" > "OAuth client ID"
+   - Set application type to "Web application"
+   - Add authorized JavaScript origins:
+     - For local development: `http://localhost:5173` (or whatever port Vite uses)
+     - For production: `https://scientistigwe.github.io`
+   - Add authorized redirect URIs:
+     - For local development: `http://localhost:5173`
+     - For production: `https://scientistigwe.github.io/JobApplicationTracker`
+   - Click "Create" and copy the Client ID
+
+3. Run the development server:
+   ```
+   npm run dev
+   ```
+
+## Features
+
+- Track job applications with company, position, date, status, and more
+- Filter and search applications
+- Material-UI interface for responsive design
+- Local storage for offline access
+- Google Sheets integration for cross-device syncing
+- Google OAuth authentication for secure access to your Google Sheets
+
+## Deployment
+
+To deploy to GitHub Pages:
+
+```
+npm run deploy
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Google Sheets Setup
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+1. Create a new Google Sheet
+2. Add a sheet called "Applications"
+3. Add headers in row 1: Company, Position, Date, Status, Source, Notes, Salary
+4. Copy the Spreadsheet ID (the long string in the URL) and paste it into the app when prompted
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+## Google Cloud Console Setup
+
+1. Enable the Google Sheets API in your Google Cloud Console project
+2. Configure the OAuth consent screen:
+   - Add the `https://www.googleapis.com/auth/spreadsheets` scope
+   - Add your email address as a test user
+
+## Technical Notes
+
+This project is built with:
+
+- React 19
+- TypeScript
+- Vite 6
+- Material-UI 7
+- Google Identity Services for authentication
+
+```
+
 ```
