@@ -7,5 +7,9 @@
   },
   "devDependencies": {
     "gh-pages": "^6.3.0"
+  },
+  "dependencies": {
+    "@mui/system": "^7.1.1",
+    "@mui/types": "^7.4.3"
   }
 }

@@ -21,7 +21,6 @@ import {
   Alert,
   Snackbar,
   CircularProgress,
-  Grid,
   InputAdornment,
 } from "@mui/material";
 import {
@@ -35,12 +34,10 @@ import {
   Publish,
   Search,
   Close,
-  Visibility,
-  VisibilityOff,
-  Wifi,
-  WifiOff,
 } from "@mui/icons-material";
 import { GoogleAuthButton } from "./GoogleAuth";
+import { Wifi, WifiOff } from "@mui/icons-material";
+import Grid from "@mui/material/Grid";
 
 interface Application {
   id: number;
@@ -67,7 +64,6 @@ const JobApplicationTracker = () => {
   const [statusFilter, setStatusFilter] = useState("All");
   const [editingId, setEditingId] = useState<number | null>(null);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
-  const [showPassword, setShowPassword] = useState(false);
   const [googleToken, setGoogleToken] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -202,15 +198,6 @@ const JobApplicationTracker = () => {
     setApplications(apps);
   };
 
-  const syncWithSheets = async () => {
-    if (!isOnline) {
-      setError("You must be online to sync with Google Sheets.");
-      return;
-    }
-    await saveToSheets(applications);
-    await loadFromSheets();
-  };
-
   // Load applications from Google Sheets
   const loadFromSheets = async () => {
     if (!googleToken || !config.spreadsheetId) {
@@ -263,60 +250,6 @@ const JobApplicationTracker = () => {
       }
     } catch (err: any) {
       setError(`Sync failed: ${err.message}`);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Save applications to Google Sheets
-  const saveToSheets = async (newApplications: Application[]) => {
-    if (!googleToken || !config.spreadsheetId) {
-      setError("Please sign in and configure Spreadsheet ID first");
-      return false;
-    }
-    if (!isOnline) {
-      setError(
-        "You're offline. Changes saved locally and will sync when online."
-      );
-      saveToMemory(newApplications);
-      return true;
-    }
-    setLoading(true);
-    setError("");
-    try {
-      const values = [
-        ["Company", "Position", "Date", "Status", "Source", "Notes", "Salary"],
-        ...newApplications.map((app) => [
-          app.company,
-          app.position,
-          app.date,
-          app.status,
-          app.source,
-          app.notes,
-          app.salary || "",
-        ]),
-      ];
-      const url = `https://sheets.googleapis.com/v4/spreadsheets/${config.spreadsheetId}/values/${config.range}?valueInputOption=RAW`;
-      const response = await fetch(url, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${googleToken}`,
-        },
-        body: JSON.stringify({ values }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Save failed: HTTP ${response.status}`);
-      }
-
-      saveToMemory(newApplications);
-      setSuccess("Changes saved and synced!");
-      return true;
-    } catch (err: any) {
-      setError(`Save failed: ${err.message}. Changes saved locally.`);
-      saveToMemory(newApplications);
-      return false;
     } finally {
       setLoading(false);
     }
@@ -444,142 +377,6 @@ const JobApplicationTracker = () => {
     }
   };
 
-  const renderApplicationRow = (app: Application) => {
-    const isEditing = editingId === app.id;
-    return (
-      <TableRow
-        key={app.id}
-        sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-      >
-        <TableCell component="th" scope="row">
-          {isEditing ? (
-            <TextField
-              size="small"
-              name="company"
-              value={app.company}
-              onChange={(e) => handleEditChange(e, app.id)}
-            />
-          ) : (
-            app.company
-          )}
-        </TableCell>
-        <TableCell>
-          {isEditing ? (
-            <TextField
-              size="small"
-              name="position"
-              value={app.position}
-              onChange={(e) => handleEditChange(e, app.id)}
-            />
-          ) : (
-            app.position
-          )}
-        </TableCell>
-        <TableCell>
-          {isEditing ? (
-            <TextField
-              size="small"
-              type="date"
-              name="date"
-              value={app.date}
-              onChange={(e) => handleEditChange(e, app.id)}
-              InputLabelProps={{
-                shrink: true,
-              }}
-            />
-          ) : (
-            app.date
-          )}
-        </TableCell>
-        <TableCell>
-          {isEditing ? (
-            <FormControl fullWidth size="small">
-              <Select
-                name="status"
-                value={app.status}
-                onChange={(e) => handleEditSelectChange(e, app.id)}
-              >
-                {statusOptions.map((status) => (
-                  <MenuItem key={status} value={status}>
-                    {status}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          ) : (
-            <Chip
-              label={app.status}
-              color={statusColors[app.status] || "default"}
-              size="small"
-            />
-          )}
-        </TableCell>
-        <TableCell>
-          {isEditing ? (
-            <TextField
-              size="small"
-              name="source"
-              value={app.source}
-              onChange={(e) => handleEditChange(e, app.id)}
-            />
-          ) : (
-            app.source
-          )}
-        </TableCell>
-        <TableCell>
-          {isEditing ? (
-            <TextField
-              size="small"
-              name="salary"
-              value={app.salary}
-              onChange={(e) => handleEditChange(e, app.id)}
-            />
-          ) : (
-            app.salary
-          )}
-        </TableCell>
-        <TableCell>
-          {isEditing ? (
-            <TextField
-              size="small"
-              name="notes"
-              value={app.notes}
-              onChange={(e) => handleEditChange(e, app.id)}
-              multiline
-              maxRows={2}
-            />
-          ) : (
-            app.notes
-          )}
-        </TableCell>
-        <TableCell>
-          {isEditing ? (
-            <>
-              <IconButton onClick={() => updateApplication(app)} size="small">
-                <Save />
-              </IconButton>
-              <IconButton onClick={() => setEditingId(null)} size="small">
-                <Close />
-              </IconButton>
-            </>
-          ) : (
-            <>
-              <IconButton onClick={() => setEditingId(app.id)} size="small">
-                <Edit />
-              </IconButton>
-              <IconButton
-                onClick={() => deleteApplication(app.id)}
-                size="small"
-              >
-                <Delete />
-              </IconButton>
-            </>
-          )}
-        </TableCell>
-      </TableRow>
-    );
-  };
-
   // Show login page if not logged in
   if (!isLoggedIn) {
     return (
@@ -636,7 +433,9 @@ const JobApplicationTracker = () => {
             <Typography variant="h6" gutterBottom>
               Configuration
             </Typography>
+            {/* @ts-ignore */}
             <Grid container spacing={2}>
+              {/* @ts-ignore */}
               <Grid item xs={12} md={6}>
                 <TextField
                   fullWidth

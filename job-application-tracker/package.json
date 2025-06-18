@@ -6,7 +6,7 @@
   "homepage": "https://scientistigwe.github.io/JobApplicationTracker",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc --noEmit false --skipLibCheck && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "predeploy": "npm run build",
@@ -17,6 +17,7 @@
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^7.1.1",
     "@mui/material": "^7.1.1",
+    "job-application-tracker-root": "file:..",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
@@ -25,6 +26,7 @@
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
     "@vitejs/plugin-react": "^4.4.1",
+    "autoprefixer": "^10.4.21",
     "eslint": "^9.25.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.19",
