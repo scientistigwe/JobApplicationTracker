@@ -1,0 +1,11 @@
+{
+  "name": "job-application-tracker-root",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "deploy": "npm run build --prefix job-application-tracker && gh-pages -d job-application-tracker/dist"
+  },
+  "devDependencies": {
+    "gh-pages": "^6.3.0"
+  }
+}
